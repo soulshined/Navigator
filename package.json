@@ -1,0 +1,583 @@
+{
+    "name": "navigator",
+    "displayName": "Navigator",
+    "description": "Helper to navigate your cursor with a little more freedom",
+    "version": "1.0.1",
+    "publisher": "davidfreer",
+    "bugs": {
+        "url": "https://github.com/soulshined/Navigator/issues"
+    },
+    "license": "MIT",
+    "homepage": "https://github.com/soulshined/Navigator",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/soulshined/Navigator"
+    },
+    "engines": {
+        "vscode": "^1.48.0",
+        "node": "14.0.0"
+    },
+    "qna": "marketplace",
+    "activationEvents": [
+        "*"
+    ],
+    "categories": [
+        "Other",
+        "Keymaps"
+    ],
+    "keywords": [
+        "navigate",
+        "cursor",
+        "move",
+        "sequence"
+    ],
+    "preview": false,
+    "galleryBanner": {
+        "color": "#A682FF",
+        "theme": "light"
+    },
+    "icon": "images/logo.png",
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "navigator.pick-history-item",
+                "title": "History",
+                "category": "Navigator"
+            },
+            {
+                "command": "navigator.sequence1",
+                "title": "Sequence 1",
+                "category": "Navigator"
+            },
+            {
+                "command": "navigator.sequence2",
+                "title": "Sequence 2",
+                "category": "Navigator"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "navigator.activate",
+                "key": "ctrl+;",
+                "when": "editorTextFocus && !navigator.isInputMode"
+            },
+            {
+                "command": "navigator.cancel",
+                "key": "escape",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.accept",
+                "key": "enter",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.select-accept",
+                "key": "shift+enter",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.jump-to-next-symbol",
+                "key": "ctrl+down",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.jump-to-previous-symbol",
+                "key": "ctrl+up",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.search",
+                "key": "ctrl+s",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.reverse-search",
+                "key": "ctrl+shift+s",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.jumplines",
+                "key": "ctrl+j",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.pattern-search",
+                "key": "ctrl+r",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.reverse-pattern-search",
+                "key": "ctrl+shift+r",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.end-of-line-char",
+                "key": "ctrl+shift+4",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.start-of-line-char",
+                "key": "ctrl+shift+6",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.nth-line-char",
+                "key": "ctrl+shift+3",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.jump-to-next-cursor-match",
+                "key": "ctrl+n",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.jump-to-reverse-cursor-match",
+                "key": "ctrl+shift+n",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.backspace",
+                "key": "backspace",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.consume",
+                "key": "tab",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.consume",
+                "key": "left",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.consume",
+                "key": "right",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.consume",
+                "key": "delete",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.commandhistory",
+                "key": "up",
+                "args": {
+                    "target": "next"
+                },
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.commandhistory",
+                "key": "down",
+                "args": {
+                    "target": "previous"
+                },
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.copy",
+                "key": "ctrl+c",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.repeat",
+                "key": "ctrl+shift+;",
+                "when": "editorTextFocus && !navigator.isInputMode"
+            },
+            {
+                "command": "navigator.toggle-search-case-sensitivity",
+                "key": "alt+c",
+                "when": "editorTextFocus && navigator.isInputMode"
+            }
+        ],
+        "configuration": {
+            "properties": {
+                "navigator.deactivateNavigatorOnEditorChange": {
+                    "type": "boolean",
+                    "description": "This deactiavtes Navigator when you change text editors",
+                    "default": true
+                },
+                "navigator.defaultCommand": {
+                    "enum": [
+                        "SEARCH",
+                        "REVERSE SEARCH",
+                        "PATTERN SEARCH",
+                        "REVERSE PATTERN SEARCH",
+                        "JUMP LINES",
+                        "LINE FIRST CHAR OCCURRENCE",
+                        "LINE LAST CHAR OCCURRENCE",
+                        "LINE N CHAR",
+                        "CURSOR MATCH",
+                        "REVERSE CURSOR MATCH"
+                    ],
+                    "default": "PATTERN SEARCH",
+                    "description": "The command that Navigator defaults to each time it is activated",
+                    "enumDescriptions": [
+                        "Forward search for a case-sensitive matching substring",
+                        "Reverse search for a case-sensitive matching substring",
+                        "Forward regex pattern search",
+                        "Reverse regex pattern search",
+                        "Jump n lines from current position. This can be a negative number to jump backwards, or a positive number to jump forwards",
+                        "Jump to the first char occurrence of a provided char, on the current line",
+                        "Jump to the last char occurrence of a provided char, on the current line",
+                        "Jump to the nth char on the current line. This can be a negative number to jump starting from the end, or a positive number to start from the beginning",
+                        "Immediately forward jump to the next character the same as the character of current cursor position",
+                        "Immediately reverse jump to the nearest character the same as the character of current cursor position"
+                    ]
+                },
+                "navigator.feedbackStyle": {
+                    "enum": [
+                        "none",
+                        "statusbar",
+                        "notification"
+                    ],
+                    "default": "statusbar",
+                    "markdownDescription": "The style of feedback provided for any command related actions. To only provide feedback for errors, set `navigator.feedbackOnErrorOnly` to true",
+                    "enumDescriptions": [
+                        "No feedback is provided for any command related activities",
+                        "Statusbar feedback only works when there is an active workspace. Feedback is provided by changing the color of your workspace statusbar to a respective command result. For example, if you use the jump lines command and enter an invalid number (letters), your status bar would briefly change to red and then back to it's preferred state. If you type a valid number to jump lines, your status bar will briefly change to green and then revert back to it's preferred state",
+                        "Notification messages will be displayed"
+                    ]
+                },
+                "navigator.activateWithMostRecentCommand": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When navigator is activated, it will activate with the most recently used command, or if none has been used the default command"
+                },
+                "navigator.defaultIgnoreCase": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Default case-sensitivity for searches"
+                },
+                "navigator.activateWithPreviousCaseSensitivity": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When navigator is activated, it will activate with the most recently used case sensitivity setting, or if none has been used the default setting"
+                },
+                "navigator.feedbackOnErrorOnly": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When you don't want to be notified or provided feedback for any thing other than errors. This setting is only applicable if feedbackStyle is set to anything other than 'none'"
+                },
+                "navigator.stickyErrors": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When enabled, this will not deactivate navigator when there is an error allowing you to undo or change patterns or commands immediately. This setting works even if feedbackStyle is set to 'none'"
+                },
+                "navigator.maxhistory": {
+                    "type": "integer",
+                    "minimum": 10,
+                    "maximum": 50,
+                    "default": 10,
+                    "description": "The number of history items retained in memory to scroll through"
+                },
+                "navigator.resetHistoryIndex": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When enabled, this will always start the history scroll at the most recently used command, otherwise the last place you scrolled in history will be retained"
+                },
+                "navigator.activeForeground": {
+                    "type": "string",
+                    "default": "#000000",
+                    "description": "The color of the navigator status bar text when active",
+                    "format": "color-hex"
+                },
+                "navigator.inactiveForeground": {
+                    "type": "string",
+                    "default": "#525252",
+                    "description": "The color of the navigator status bar text when inactive",
+                    "format": "color-hex"
+                },
+                "navigator.multicursorSupportedCommandsMustAllMatch": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When enabled and a command is executed that supports multiple cursors, the query must exist on all lines of selection. If enabled and there is a line that doesn't contain the query, nothing will happen. If disabled and there is not a match then the cursor selection will be omitted and the rest of the selections will continue per normal"
+                },
+                "navigator.allowableSymbols": {
+                    "type": "array",
+                    "scope": "language-overridable",
+                    "description": "For the jump to the prev/next command, this restricts the symbols allowed to be navigated to. This supports per-language configuration",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "Class",
+                        "Constructor",
+                        "Enum",
+                        "Function",
+                        "Method",
+                        "Namespace",
+                        "Struct"
+                    ]
+                },
+                "navigator.sequence1": {
+                    "scope": "language-overridable",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "required": [
+                                    "commandId"
+                                ],
+                                "properties": {
+                                    "commandId": {
+                                        "type": "string",
+                                        "description": "The name of the command id to execute. This can be any Navigator commandId or otherwise.",
+                                        "examples": [
+                                            "navigator.jumplines",
+                                            "navigator.nth-line-char",
+                                            "navigator.jump-to-next-cursor-match",
+                                            "deleteRight",
+                                            "workbench.action.files.save"
+                                        ]
+                                    },
+                                    "args": {
+                                        "type": "object"
+                                    }
+                                },
+                                "if": {
+                                    "properties": {
+                                        "commandId": {
+                                            "enum": [
+                                                "navigator.jumplines",
+                                                "navigator.nth-line-char"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "required": [
+                                        "commandId",
+                                        "args"
+                                    ],
+                                    "properties": {
+                                        "args": {
+                                            "properties": {
+                                                "value": {
+                                                    "type": "integer",
+                                                    "description": "Can't be zero. Supports negative numbers",
+                                                    "default": 1,
+                                                    "not": {
+                                                        "const": 0
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "value"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "if": {
+                                        "properties": {
+                                            "commandId": {
+                                                "enum": [
+                                                    "navigator.search",
+                                                    "navigator.reverse-search",
+                                                    "navigator.pattern-search",
+                                                    "navigator.reverse-pattern-search",
+                                                    "navigator.end-of-line-char",
+                                                    "navigator.start-of-line-char"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "required": [
+                                            "commandId",
+                                            "args"
+                                        ],
+                                        "properties": {
+                                            "args": {
+                                                "properties": {
+                                                    "value": {
+                                                        "type": "string",
+                                                        "pattern": "^.+$"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "value"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "commandId"
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "string",
+                                "description": "The name of the command id to execute. This can be any Navigator commandId or otherwise.",
+                                "examples": [
+                                    "navigator.jump-to-next-cursor-match",
+                                    "deleteRight",
+                                    "workbench.action.files.save"
+                                ],
+                                "not": {
+                                    "description": "Navigator commands require arguments",
+                                    "enum": [
+                                        "navigator.jumplines",
+                                        "navigator.nth-line-char",
+                                        "navigator.search",
+                                        "navigator.reverse-search",
+                                        "navigator.pattern-search",
+                                        "navigator.reverse-pattern-search",
+                                        "navigator.end-of-line-char",
+                                        "navigator.start-of-line-char"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "navigator.sequence2": {
+                    "scope": "language-overridable",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "required": [
+                                    "commandId"
+                                ],
+                                "properties": {
+                                    "commandId": {
+                                        "type": "string",
+                                        "description": "The name of the command id to execute. This can be any Navigator commandId or otherwise.",
+                                        "examples": [
+                                            "navigator.jumplines",
+                                            "navigator.nth-line-char",
+                                            "navigator.jump-to-next-cursor-match",
+                                            "deleteRight",
+                                            "workbench.action.files.save"
+                                        ]
+                                    },
+                                    "args": {
+                                        "type": "object"
+                                    }
+                                },
+                                "if": {
+                                    "properties": {
+                                        "commandId": {
+                                            "enum": [
+                                                "navigator.jumplines",
+                                                "navigator.nth-line-char"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "required": [
+                                        "commandId",
+                                        "args"
+                                    ],
+                                    "properties": {
+                                        "args": {
+                                            "properties": {
+                                                "value": {
+                                                    "type": "integer",
+                                                    "description": "Can't be zero. Supports negative numbers",
+                                                    "default": 1,
+                                                    "not": {
+                                                        "const": 0
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "value"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "if": {
+                                        "properties": {
+                                            "commandId": {
+                                                "enum": [
+                                                    "navigator.search",
+                                                    "navigator.reverse-search",
+                                                    "navigator.pattern-search",
+                                                    "navigator.reverse-pattern-search",
+                                                    "navigator.end-of-line-char",
+                                                    "navigator.start-of-line-char"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "required": [
+                                            "commandId",
+                                            "args"
+                                        ],
+                                        "properties": {
+                                            "args": {
+                                                "properties": {
+                                                    "value": {
+                                                        "type": "string",
+                                                        "pattern": "^.+$"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "value"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "commandId"
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "string",
+                                "description": "The name of the command id to execute. This can be any Navigator commandId or otherwise.",
+                                "examples": [
+                                    "navigator.jump-to-next-cursor-match",
+                                    "deleteRight",
+                                    "workbench.action.files.save"
+                                ],
+                                "not": {
+                                    "description": "Navigator commands require arguments",
+                                    "enum": [
+                                        "navigator.jumplines",
+                                        "navigator.nth-line-char",
+                                        "navigator.search",
+                                        "navigator.reverse-search",
+                                        "navigator.pattern-search",
+                                        "navigator.reverse-pattern-search",
+                                        "navigator.end-of-line-char",
+                                        "navigator.start-of-line-char"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^8.0.3",
+        "@types/node": "^14.6.3",
+        "@types/vscode": "^1.48.0",
+        "tslint": "^6.1.3",
+        "typescript": "^4.0.2",
+        "vscode-test": "^1.4.0"
+    }
+}

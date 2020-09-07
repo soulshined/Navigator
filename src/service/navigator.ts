@@ -1,0 +1,155 @@
+import { EditorUtil } from "../util/editorutil";
+import * as vscode from "vscode";
+import { CommandResult } from "../model/navigatiorcommand";
+import { clamp } from "../util/frequent";
+import { UserConfig } from "../util/userconfig";
+
+export class NavigatorService {
+
+    public static jumpLines(qty: number, select: boolean) {
+        if (!EditorUtil.activeEditor || qty === 0) return;
+
+        const editor = EditorUtil.activeEditor;
+        const pos = new vscode.Position(Math.max(0, editor.selection.active.line + qty), 0);
+        const range = new vscode.Range(pos, pos);
+        EditorUtil.setSelection(pos, select);
+        editor.revealRange(range);
+        return new CommandResult("Success");
+    }
+
+    public static jumpToCurrentLineCharIndex(index: number, select: boolean): CommandResult | undefined {
+        if (!EditorUtil.activeEditor) return;
+
+        let updatedSelections: vscode.Selection[] = [];
+        for (let i = 0; i < EditorUtil.activeEditor.selections.length; ++i) {
+            const selection = EditorUtil.activeEditor.selections[i];
+            const lineText = EditorUtil.getLineAt(selection.active.line);
+            if (!lineText) continue;
+
+            const firstChar = lineText.firstNonWhitespaceCharacterIndex;
+            const lastChar = lineText.text.match(/\S\s*$/)?.index ?? firstChar;
+
+            let charIndex = clamp(index - 1 + firstChar, firstChar, lastChar);
+            if (index < 0) {
+                charIndex = clamp(lastChar + index + 1, firstChar, lastChar);
+            }
+
+            if (charIndex < 0) {
+                if (UserConfig.multicursorSupportedCommandsMustAllMatch)
+                    return new CommandResult(`No match found on line ${selection.active.line + 1}`, true);
+
+                continue;
+            }
+            const pos = new vscode.Position(selection.active.line, charIndex);
+            let anchor = pos;
+            if (select) anchor = selection.active;
+            updatedSelections.push(new vscode.Selection(anchor, pos));
+        }
+
+        EditorUtil.activeEditor.selections = updatedSelections;
+
+        return new CommandResult("Success");
+    }
+
+    public static jumpToAbsoluteIndex(index: number, select: boolean) {
+        if (!EditorUtil.activeEditor) return;
+
+        const pos = EditorUtil.activeEditor.document.positionAt(Math.max(0, index));
+        const range = new vscode.Range(pos, pos);
+        EditorUtil.setSelection(pos, select);
+        EditorUtil.activeEditor.revealRange(range);
+    }
+
+    public static jumpToNextMatchViaPattern(pattern: string, isCaseSensitive: boolean, select: boolean) {
+        const rangeToDocEnd = EditorUtil.getRangeToEndOfDocumentFromCurrentPosition();
+        if (!rangeToDocEnd || EditorUtil.getCurrentPositionOffset() === undefined) return;
+
+        const rangeText = EditorUtil.getText(rangeToDocEnd).substring(1);
+        let flags: string = "";
+        if (!isCaseSensitive) flags += 'i';
+
+        try {
+            const regex = new RegExp(pattern, flags);
+
+            const match = regex.exec(rangeText);
+            if (match != null) {
+                this.jumpToAbsoluteIndex(EditorUtil.getCurrentPositionOffset()! + match.index + 1, select);
+                return new CommandResult("Success");
+            }
+
+            return new CommandResult("Not match found", true);
+        } catch (error) {
+            console.error(error);
+
+            return new CommandResult(!error.message || error.message === "" ? "Invalid regex pattern" : error.message, true);
+        }
+    }
+
+    public static jumpToNextSubstring(value: string, isCaseSensitive: boolean, select: boolean) {
+        const rangeToDocEnd = EditorUtil.getRangeToEndOfDocumentFromCurrentPosition();
+        if (!rangeToDocEnd || EditorUtil.getCurrentPositionOffset() === undefined) return;
+
+        let rangeText = EditorUtil.getText(rangeToDocEnd).substring(1);
+        if (!isCaseSensitive) {
+            rangeText = rangeText.toLowerCase();
+            value = value.toLowerCase();
+        }
+        const matchIndex = rangeText.indexOf(value);
+
+        if (matchIndex !== -1) {
+            this.jumpToAbsoluteIndex(matchIndex + EditorUtil.getCurrentPositionOffset()! + 1, select);
+            return new CommandResult("Success");
+        }
+
+        return new CommandResult("No match found", true);
+    }
+
+    public static jumpToPrevSubstring(value: string, isCaseSensitive: boolean, select: boolean) {
+        const rangeFromDocStart = EditorUtil.getRangeToStartOfDocumentFromCurrentPosition();
+        if (!rangeFromDocStart || EditorUtil.getCurrentPositionOffset() === undefined) return;
+
+        let rangeText = EditorUtil.getText(rangeFromDocStart);
+        if (!isCaseSensitive) {
+            rangeText = rangeText.toLowerCase();
+            value = value.toLowerCase();
+        }
+        const matchIndex = rangeText.lastIndexOf(value);
+
+        if (matchIndex !== -1) {
+            this.jumpToAbsoluteIndex(matchIndex, select);
+            return new CommandResult("Success");
+        }
+
+        return new CommandResult("No previous match found", true);
+    }
+
+    public static jumpToPrevMatchViaPattern(pattern: string, isCaseSensitive: boolean, select: boolean) {
+        const rangeToDocStart = EditorUtil.getRangeToStartOfDocumentFromCurrentPosition();
+        if (!rangeToDocStart || EditorUtil.getCurrentPositionOffset() === undefined) return;
+
+        const rangeText = EditorUtil.getText(rangeToDocStart);
+        let flags: string = "g";
+        if (!isCaseSensitive) flags += 'i';
+
+        try {
+            const regex = new RegExp(pattern, flags);
+            const matches = [...rangeText.matchAll(regex)];
+
+            if (matches.length > 0) {
+                let match: RegExpMatchArray = matches[matches.length - 1];
+                if (match.index) {
+                    this.jumpToAbsoluteIndex(match.index, select);
+                    return new CommandResult("Success");
+                }
+                return new CommandResult("Error finding index for match", true);
+            }
+
+            return new CommandResult("No previous match found", true);
+        } catch (error) {
+            console.error(error);
+
+            return new CommandResult(!error.message || error.message === "" ? "Invalid regex pattern" : error.message, true);
+        }
+    }
+
+}
