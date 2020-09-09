@@ -10,10 +10,11 @@ export class NavigatorService {
         if (!EditorUtil.activeEditor || qty === 0) return;
 
         const editor = EditorUtil.activeEditor;
-        const pos = new vscode.Position(Math.max(0, editor.selection.active.line + qty), 0);
-        const range = new vscode.Range(pos, pos);
+        const currentCharIndex = editor.selection.active.character;
+        const newLine = EditorUtil.getLineAt(clamp(editor.selection.active.line + qty, 0, editor.document.lineCount - 1))!;
+        const pos = new vscode.Position(newLine.lineNumber, clamp(currentCharIndex, 0, newLine.text.trimRight().length));
         EditorUtil.setSelection(pos, select);
-        editor.revealRange(range);
+        editor.revealRange(new vscode.Range(pos, pos));
         return new CommandResult("Success");
     }
 
