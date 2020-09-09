@@ -35,13 +35,15 @@ export class NavigatorCommand {
     private _fn: (args: CommandArgs) => CommandResult | undefined;
     private _commandValueType: NavigatorCommandValueType;
     private _canToggleSensitivity: boolean;
+    private _canRepeat: boolean;
 
-    constructor(commandConstant: ICommands, fn: (args: CommandArgs) => CommandResult | undefined, valueType: NavigatorCommandValueType = NavigatorCommandValueType.ANY, canToggleSensitivity: boolean = false) {
+    constructor(commandConstant: ICommands, fn: (args: CommandArgs) => CommandResult | undefined, valueType: NavigatorCommandValueType = NavigatorCommandValueType.ANY, canToggleSensitivity: boolean = false, isRepeatableCommand: boolean = false) {
         this._identifier = commandConstant.IDENTIFIER;
         this._fn = fn;
         this._description = commandConstant.DESCRIPTION;
         this._commandValueType = valueType;
         this._canToggleSensitivity = canToggleSensitivity;
+        this._canRepeat = isRepeatableCommand;
     }
 
     public get identifier(): string {
@@ -62,6 +64,10 @@ export class NavigatorCommand {
 
     public get canToggleSensitivity(): boolean {
         return this._canToggleSensitivity;
+    }
+
+    public get canRepeat(): boolean {
+        return this._canRepeat;
     }
 
     toString(): string {
@@ -243,7 +249,21 @@ export class NavigatorCommandsList {
             EditorUtil.activeEditor.selections = updatedSelections;
 
             return new CommandResult("Success");
-        }, NavigatorCommandValueType.SINGLE_CHAR, true)]
+        }, NavigatorCommandValueType.SINGLE_CHAR, true)],
+
+        [Commands.JUMP_TO_NEXT_PARAGRAPH.IDENTIFIER, new NavigatorCommand(Commands.JUMP_TO_NEXT_PARAGRAPH, (args: CommandArgs) => {
+            console.log("next paragraph handler =>", args);
+            if (!EditorUtil.activeEditor) return;
+
+            return NavigatorService.jumpToParagraph('forwards', args.select);
+        }, NavigatorCommandValueType.NONE, false, true)],
+
+        [Commands.JUMP_TO_PREVIOUS_PARAGRAPH.IDENTIFIER, new NavigatorCommand(Commands.JUMP_TO_PREVIOUS_PARAGRAPH, (args: CommandArgs) => {
+            console.log("prev paragraph handler =>", args);
+            if (!EditorUtil.activeEditor) return;
+
+            return NavigatorService.jumpToParagraph('reverse', args.select);
+        }, NavigatorCommandValueType.NONE, false, true)],
     ]);
 
     public static getCommand(description: string): NavigatorCommand {

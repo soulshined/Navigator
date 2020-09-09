@@ -42,6 +42,14 @@ export abstract class Constants {
         JUMP_TO_REVERSE_CURSOR_MATCH: {
             IDENTIFIER: 'ctrl+shift+n',
             DESCRIPTION: "REVERSE CURSOR MATCH"
+        },
+        JUMP_TO_NEXT_PARAGRAPH: {
+            IDENTIFIER: 'ctrl+]',
+            DESCRIPTION: 'NEXT PARAGRAPH'
+        },
+        JUMP_TO_PREVIOUS_PARAGRAPH: {
+            IDENTIFIER: 'ctrl+[',
+            DESCRIPTION: 'PREVIOUS PARAGRAPH'
         }
     }
 

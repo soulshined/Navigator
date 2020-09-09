@@ -152,4 +152,35 @@ export class NavigatorService {
         }
     }
 
+    public static jumpToParagraph(direction: 'forwards' | 'reverse', select: boolean = false) {
+        if (!EditorUtil.getCurrentPosition()) return;
+        let emptyLine;
+        if (direction === 'forwards') {
+            const text = EditorUtil.getRangeToEndOfDocumentFromCurrentPosition()!;
+            for (let i = text.start.line + 1; i < EditorUtil.activeEditor!.document.lineCount; ++i)
+                if (EditorUtil.getLineAt(i)!.isEmptyOrWhitespace) {
+                    emptyLine = i;
+                    break;
+                }
+        }
+        else {
+            const text = EditorUtil.getRangeToStartOfDocumentFromCurrentPosition()!;
+            for (let i = text.end.line - 1; i >= 0; --i)
+                if (EditorUtil.getLineAt(i)!.isEmptyOrWhitespace) {
+                    emptyLine = i;
+                    break;
+                }
+        }
+
+        if (!emptyLine) return new CommandResult('No empty lines found');
+
+        const pos = new vscode.Position(emptyLine, 0);
+        const anchor = select
+            ? EditorUtil.activeEditor!.selection.anchor
+            : pos;
+        EditorUtil.activeEditor!.selection = new vscode.Selection(anchor, pos);
+        EditorUtil.activeEditor!.revealRange(new vscode.Range(pos, pos));
+        return new CommandResult("Success");
+    }
+
 }

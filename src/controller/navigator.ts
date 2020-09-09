@@ -17,6 +17,8 @@ export class Navigator {
     private _caseSensitive: boolean = !UserConfig.defaultIgnoreCase;
 
     public async listen(text: string) {
+        if (this.getActiveCommand().valueType === NavigatorCommandValueType.NONE) return;
+
         this._input += text;
         this._statusBarService.setState({ text: this._input, command: this.getActiveCommand(), isCaseSensitive: this._caseSensitive });
 
@@ -86,6 +88,8 @@ export class Navigator {
                 "command": this.getActiveCommand(),
                 ...args
             });
+
+        if (this.getActiveCommand().canRepeat) return;
 
         await this._feedbackService.initiateFeedbackFromResult(result);
         await this.clear(false, result);

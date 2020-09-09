@@ -351,6 +351,20 @@ To limit quantity of navigations, the following main symbols are checked for by 
 
 ---
 
+## Navigate To Beginning of Previous/Next Paragraph
+Next: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>]</kbd><br>
+Next With Selection: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>}</kbd><br>
+Previous: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>[</kbd><br>
+Previous With Selection: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>{</kbd><br>
+Value: None <br>
+Notes:
+  - Doesn't unfocus Navigator. 
+  - Can be repeated without reactivating Navigator or using the repeat keybind
+
+Navigate to the beginning of the previous or next paragraph. A 'paragraph' defined as any text separated by an empty or whitespace filled line. This command will navigate to the first found empty line in the respective direction, regardless of scope.
+
+---
+
 ## Repeat the Last Used Command
 <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>;</kbd><br>
 

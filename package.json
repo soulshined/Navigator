@@ -138,6 +138,26 @@
                 "when": "editorTextFocus && navigator.isInputMode"
             },
             {
+                "command": "navigator.jump-to-previous-paragraph",
+                "key": "ctrl+[",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.select-jump-to-previous-paragraph",
+                "key": "ctrl+shift+[",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.jump-to-next-paragraph",
+                "key": "ctrl+]",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
+                "command": "navigator.select-jump-to-next-paragraph",
+                "key": "ctrl+shift+]",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
                 "command": "navigator.backspace",
                 "key": "backspace",
                 "when": "editorTextFocus && navigator.isInputMode"

@@ -187,6 +187,22 @@ export function activate(context: vscode.ExtensionContext) {
         EditorUtil.activeEditor.revealRange(prev.selectionRange);
 
     })
+    registerCommand('navigator.jump-to-previous-paragraph', async () => {
+        await navigator.setActiveCommand(Commands.JUMP_TO_PREVIOUS_PARAGRAPH.DESCRIPTION);
+        await navigator.doCommand();
+    })
+    registerCommand('navigator.select-jump-to-previous-paragraph', async () => {
+        await navigator.setActiveCommand(Commands.JUMP_TO_PREVIOUS_PARAGRAPH.DESCRIPTION);
+        await navigator.doCommand({ select: true });
+    })
+    registerCommand('navigator.jump-to-next-paragraph', async () => {
+        await navigator.setActiveCommand(Commands.JUMP_TO_NEXT_PARAGRAPH.DESCRIPTION);
+        await navigator.doCommand();
+    })
+    registerCommand('navigator.select-jump-to-next-paragraph', async () => {
+        await navigator.setActiveCommand(Commands.JUMP_TO_NEXT_PARAGRAPH.DESCRIPTION);
+        await navigator.doCommand({ select: true });
+    })
     //endregion commands
 }
 
