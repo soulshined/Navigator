@@ -2,7 +2,7 @@
     "name": "navigator",
     "displayName": "Navigator",
     "description": "Helper to navigate your cursor with a little more freedom",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "publisher": "davidfreer",
     "bugs": {
         "url": "https://github.com/soulshined/Navigator/issues"
