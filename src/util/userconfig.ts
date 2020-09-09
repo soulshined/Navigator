@@ -1,5 +1,5 @@
 import { SymbolKind, window, workspace } from "vscode";
-import { NavigatorCommand, NavigatorCommandsList } from "../model/navigatiorcommand";
+import { NavigatorCommand, NavigatorCommandsList, NavigatorCommandValueType } from "../model/navigatiorcommand";
 import { Commands, Constants } from "./constants";
 import { clamp } from "./frequent";
 
@@ -27,7 +27,10 @@ export class UserConfig {
     public static get defaultCommand(): NavigatorCommand {
         const commandDesc = this.config.get('defaultCommand', Commands.PATTERN_SEARCH.DESCRIPTION);
 
-        if (NavigatorCommandsList.exists(commandDesc)) return NavigatorCommandsList.getCommand(commandDesc);
+        if (NavigatorCommandsList.exists(commandDesc)) {
+            const command = NavigatorCommandsList.getCommand(commandDesc);
+            if (command.valueType !== NavigatorCommandValueType.NONE) return command;
+        }
 
         return NavigatorCommandsList.getCommand(Commands.PATTERN_SEARCH.DESCRIPTION);
     }

@@ -210,9 +210,7 @@
                         "JUMP LINES",
                         "LINE FIRST CHAR OCCURRENCE",
                         "LINE LAST CHAR OCCURRENCE",
-                        "LINE N CHAR",
-                        "CURSOR MATCH",
-                        "REVERSE CURSOR MATCH"
+                        "LINE N CHAR"
                     ],
                     "default": "PATTERN SEARCH",
                     "description": "The command that Navigator defaults to each time it is activated",
