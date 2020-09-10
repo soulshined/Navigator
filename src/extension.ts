@@ -168,8 +168,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (!next) return;
 
-        EditorUtil.setSelection(next.selectionRange.start);
-        EditorUtil.activeEditor.revealRange(next.selectionRange);
+        await EditorUtil.setSelectionAndRevealCenter(next.selectionRange.start);
     })
     registerCommand('navigator.jump-to-previous-symbol', async () => {
         const pos = EditorUtil.getCurrentPosition();
@@ -183,9 +182,14 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (!prev) return;
 
-        EditorUtil.setSelection(prev.selectionRange.start);
-        EditorUtil.activeEditor.revealRange(prev.selectionRange);
+        await EditorUtil.setSelectionAndRevealCenter(prev.selectionRange.start);
+    })
+    registerCommand('navigator.center-screen-on-cursor', async () => {
+        const pos = EditorUtil.getCurrentPosition();
+        if (!EditorUtil.activeEditor || pos === undefined) return;
 
+        await EditorUtil.revealLineAtCenter(pos.line);
+        await navigator.clear();
     })
     registerCommand('navigator.jump-to-previous-paragraph', async () => {
         await navigator.setActiveCommand(Commands.JUMP_TO_PREVIOUS_PARAGRAPH.DESCRIPTION);

@@ -103,6 +103,11 @@
                 "when": "editorTextFocus && navigator.isInputMode"
             },
             {
+                "command": "navigator.center-screen-on-cursor",
+                "key": "ctrl+m",
+                "when": "editorTextFocus && navigator.isInputMode"
+            },
+            {
                 "command": "navigator.pattern-search",
                 "key": "ctrl+r",
                 "when": "editorTextFocus && navigator.isInputMode"

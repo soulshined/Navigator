@@ -365,6 +365,14 @@ Navigate to the beginning of the previous or next paragraph. A 'paragraph' defin
 
 ---
 
+## Center Editor On Cursor
+<kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>m</kbd><br>
+Value: None <br>
+
+This command will center the editor on the cursors active position, if applicable and if there is room to scroll.
+
+---
+
 ## Repeat the Last Used Command
 <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>;</kbd><br>
 

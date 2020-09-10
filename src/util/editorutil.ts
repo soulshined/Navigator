@@ -64,4 +64,16 @@ export class EditorUtil {
         this.activeEditor.selection = new vscode.Selection(anchor, position);
     }
 
+    public static async setSelectionAndRevealCenter(position: vscode.Position, select: boolean = false) {
+        this.setSelection(position, select);
+        await this.revealLineAtCenter(position.line);
+    }
+
+    public static async revealLineAtCenter(line: number) {
+        await vscode.commands.executeCommand("revealLine", {
+            lineNumber: line,
+            at: 'center'
+        });
+    }
+
 }
