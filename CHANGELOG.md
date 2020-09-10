@@ -3,6 +3,11 @@ All notable changes to the Navigator extension will be documented in this file.
 
 ## Release Notes
 
+### 1.1.1
+
+- Adds a new command to center the editor on the active cursor line, if applicable and if there is room to scroll<br>
+  Use `CTRL + ;` chord `CTRL + m`
+
 ### 1.1.0
 
 - Added command support to navigate to prev/next empty line
