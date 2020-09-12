@@ -1,12 +1,11 @@
-import * as vscode from "vscode";
+import { StatusBarItem, StatusBarAlignment, window } from "vscode";
 
-
-export class StatusBar {
+export default class StatusBar {
     private _text: string = "";
-    private _component: vscode.StatusBarItem;
+    private _component: StatusBarItem;
 
-    constructor(alignment: vscode.StatusBarAlignment = vscode.StatusBarAlignment.Left) {
-        this._component = vscode.window.createStatusBarItem(alignment);
+    constructor(alignment: StatusBarAlignment = StatusBarAlignment.Left) {
+        this._component = window.createStatusBarItem(alignment);
         this._component.show();
     }
 

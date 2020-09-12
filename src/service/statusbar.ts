@@ -1,15 +1,15 @@
-import { StatusBar } from "../model/statusbar";
-import { NavigatorCommand } from "../model/navigatiorcommand";
-import { UserConfig } from "../util/userconfig";
+import NavigatorCommand from "../model/commands/navigator";
+import StatusBar from "../model/statusbar";
+import UserConfig from "../util/userconfig";
 
-export interface StatusBarServiceArgs {
+interface StatusBarServiceArgs {
     command: NavigatorCommand,
     text: string,
     isCaseSensitive: boolean,
     isHistoryItem?: boolean
 }
 
-export class StatusBarService {
+export default class StatusBarService {
     private component: StatusBar = new StatusBar;
 
     constructor() {

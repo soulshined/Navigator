@@ -1,9 +1,10 @@
-import { NavigatorCommandValueType } from "../model/navigatiorcommand";
-import { HistoryItem, NavigatorHistory } from "../model/navigatorhistory";
 import { clamp } from "../util/frequent";
-import { UserConfig } from "../util/userconfig";
+import NavigatorHistory from "../model/navigator-history";
+import HistoryItem from "../types/history-item";
+import NavigatorCommandValueType from "../types/command-value-type";
+import UserConfig from "../util/userconfig";
 
-export class HistoryService {
+export default class HistoryService {
     private _history: NavigatorHistory = new NavigatorHistory;
     private _currentIndex: number = -1;
     private _maxItems: number = UserConfig.maxHistory;
@@ -51,23 +52,29 @@ export class HistoryService {
     }
 
     public getForUserRequest(direction: "next" | "previous"): HistoryItem | undefined {
+        let index = this._currentIndex;
         switch (direction) {
             case "next":
-                if (this.hasNext()) {
-                    this.next();
+                while (this.get(++index) !== undefined) {
+                    if (this.get(index)!.command.valueType !== NavigatorCommandValueType.NONE) {
+                        this._currentIndex = index;
+                        return this.get(index);
+                    }
                 }
-                return this.getCurrent() || this.get(0);
             case "previous":
-                if (this.hasPrevious()) {
-                    this.previous();
+                while (this.get(--index) != undefined) {
+                    if (this.get(index)!.command.valueType !== NavigatorCommandValueType.NONE) {
+                        this._currentIndex = index;
+                        return this.get(index);
+                    }
                 }
-                return this.getCurrent();
         }
     }
 
     public addItem(historyItem: HistoryItem) {
         this._history.getItems().unshift(historyItem);
         this._history.getItems().splice(this._maxItems);
+        console.log("new history", this._history.getItems());
     }
 
     public clear() {

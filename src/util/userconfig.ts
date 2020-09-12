@@ -1,13 +1,10 @@
 import { SymbolKind, window, workspace } from "vscode";
-import { NavigatorCommand, NavigatorCommandsList, NavigatorCommandValueType } from "../model/navigatiorcommand";
-import { Commands, Constants } from "./constants";
 import { clamp } from "./frequent";
-
-
-export type SequenceConfig = {
-    commandId: string,
-    args: { [key: string]: any }
-};
+import Constants from "./constants";
+import NavigatorCommand from "../model/commands/navigator";
+import NavigatorCommandsList from "../model/navigatior-command-list";
+import NavigatorCommandValueType from "../types/command-value-type";
+import SequenceType from "../types/sequence";
 
 const defaultAllowableSymbols = [
     SymbolKind.Class,
@@ -19,20 +16,20 @@ const defaultAllowableSymbols = [
     SymbolKind.Struct
 ];
 
-export class UserConfig {
+export default class UserConfig {
     private static get config() {
         return workspace.getConfiguration(Constants.WORKSPACE_CONFIG);
     }
 
     public static get defaultCommand(): NavigatorCommand {
-        const commandDesc = this.config.get('defaultCommand', Commands.PATTERN_SEARCH.DESCRIPTION);
+        const commandDesc = this.config.get('defaultCommand', Constants.COMMANDS.PATTERN_SEARCH);
 
         if (NavigatorCommandsList.exists(commandDesc)) {
-            const command = NavigatorCommandsList.getCommand(commandDesc);
+            const command = NavigatorCommandsList.getCommandByDescription(commandDesc);
             if (command.valueType !== NavigatorCommandValueType.NONE) return command;
         }
 
-        return NavigatorCommandsList.getCommand(Commands.PATTERN_SEARCH.DESCRIPTION);
+        return NavigatorCommandsList.getCommandByDescription(Constants.COMMANDS.PATTERN_SEARCH);
     }
 
     public static get defaultIgnoreCase(): boolean {
@@ -90,13 +87,13 @@ export class UserConfig {
         return this.config.get('multicursorSupportedCommandsMustAllMatch', true);
     }
 
-    public static getSequenceConfig(sequence: number): SequenceConfig[] {
+    public static getSequenceConfig(sequence: number): SequenceType[] {
         const editor = window.activeTextEditor;
         if (!editor) {
             return this.config.get(`sequence${sequence}`) || [];
         }
 
-        return workspace.getConfiguration(Constants.WORKSPACE_CONFIG, editor.document).get(`sequence${sequence}`) as SequenceConfig[];
+        return workspace.getConfiguration(Constants.WORKSPACE_CONFIG, editor.document).get(`sequence${sequence}`) as SequenceType[];
     }
 
     public static get deactivateNavigatorOnEditorChangeEvent(): boolean {

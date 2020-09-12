@@ -1,16 +1,16 @@
-import * as vscode from 'vscode';
+import { window, TextEditor, Position, TextLine, Range, Selection, commands } from "vscode";
 
-export class EditorUtil {
+export default class EditorUtil {
 
     public static hasActiveEditor() {
-        return vscode.window.activeTextEditor !== undefined;
+        return window.activeTextEditor !== undefined;
     }
 
-    public static get activeEditor(): vscode.TextEditor | undefined {
-        return vscode.window.activeTextEditor;
+    public static get activeEditor(): TextEditor | undefined {
+        return window.activeTextEditor;
     }
 
-    public static getCurrentPosition(): vscode.Position | undefined {
+    public static getCurrentPosition(): Position | undefined {
         if (!this.activeEditor) return;
 
         return this.activeEditor.selection.active;
@@ -22,7 +22,7 @@ export class EditorUtil {
         return this.activeEditor!.document.offsetAt(this.getCurrentPosition()!);
     }
 
-    public static getLineAt(line: number): vscode.TextLine | undefined {
+    public static getLineAt(line: number): TextLine | undefined {
         if (!this.activeEditor) return;
 
         return this.activeEditor.document.lineAt(line);
@@ -35,42 +35,42 @@ export class EditorUtil {
         return "";
     }
 
-    public static getText(range: vscode.Range): string {
+    public static getText(range: Range): string {
         if (this.activeEditor)
             return this.activeEditor.document.getText(range);
 
         return "";
     }
 
-    public static getRangeToEndOfDocumentFromCurrentPosition(): vscode.Range | undefined {
+    public static getRangeToEndOfDocumentFromCurrentPosition(): Range | undefined {
         if (!this.activeEditor || !this.getCurrentPosition()) return;
 
         const lineCount = this.activeEditor.document.lineCount;
 
-        return new vscode.Range(this.getCurrentPosition()!, new vscode.Position(lineCount, this.getLineAt(lineCount - 1)!.text.length));
+        return new Range(this.getCurrentPosition()!, new Position(lineCount, this.getLineAt(lineCount - 1)!.text.length));
     }
 
-    public static getRangeToStartOfDocumentFromCurrentPosition(): vscode.Range | undefined {
+    public static getRangeToStartOfDocumentFromCurrentPosition(): Range | undefined {
         if (!this.activeEditor || !this.getCurrentPosition()) return;
 
-        return new vscode.Range(new vscode.Position(0, 0), this.getCurrentPosition()!);
+        return new Range(new Position(0, 0), this.getCurrentPosition()!);
     }
 
-    public static setSelection(position: vscode.Position, select: boolean = false) {
+    public static setSelection(position: Position, select: boolean = false) {
         if (!this.activeEditor) return;
 
         let anchor = position;
         if (select) anchor = this.getCurrentPosition()!;
-        this.activeEditor.selection = new vscode.Selection(anchor, position);
+        this.activeEditor.selection = new Selection(anchor, position);
     }
 
-    public static async setSelectionAndRevealCenter(position: vscode.Position, select: boolean = false) {
+    public static async setSelectionAndRevealCenter(position: Position, select: boolean = false) {
         this.setSelection(position, select);
         await this.revealLineAtCenter(position.line);
     }
 
     public static async revealLineAtCenter(line: number) {
-        await vscode.commands.executeCommand("revealLine", {
+        await commands.executeCommand("revealLine", {
             lineNumber: line,
             at: 'center'
         });

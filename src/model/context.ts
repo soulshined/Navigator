@@ -1,6 +1,6 @@
-import * as vscode from "vscode";
+import { commands } from "vscode";
 
-export class ContextItem {
+export default class ContextItem {
     private _identifier: string;
     private _lastValue: boolean;
 
@@ -14,6 +14,7 @@ export class ContextItem {
             return;
         }
         this._lastValue = value;
-        vscode.commands.executeCommand('setContext', this._identifier, this._lastValue);
+        commands.executeCommand('setContext', this._identifier, this._lastValue);
     }
+
 }

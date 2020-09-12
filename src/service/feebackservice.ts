@@ -1,17 +1,10 @@
 import * as vscode from "vscode";
-import { CommandResult } from "../model/navigatiorcommand";
-import { ConfigUtil } from "../util/configutil";
+import ConfigUtil from "../util/configutil";
 import { wait } from "../util/frequent";
-import { UserConfig } from "../util/userconfig";
-import { StatusBarService } from "./statusbar";
-
-export enum FeedBackType {
-    INFO = "INFO",
-    WARN = "WARN",
-    NEUTRAL = "NEUTRAL",
-    ERROR = "ERROR",
-    SUCCESS = "SUCCESS"
-}
+import CommandResult from "../types/command-result";
+import UserConfig from "../util/userconfig";
+import FeedBackType from "../types/feedback-type";
+import StatusBarService from "./statusbar";
 
 const FeedbackTypeImpl: { [key: string]: any } = {
     INFO: {
@@ -52,7 +45,7 @@ const FeedbackTypeImpl: { [key: string]: any } = {
     },
 }
 
-export class FeedbackService {
+export default class FeedbackService {
     private statusBarService: StatusBarService;
     private isAnimating: boolean = false;
 
@@ -111,6 +104,7 @@ export class FeedbackService {
         if (!vscode.workspace.workspaceFolders) return;
 
         await ConfigUtil.resetColors();
+        this.isAnimating = false;
         this.statusBarService.setColor(undefined);
     }
 

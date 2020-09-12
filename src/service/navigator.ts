@@ -1,10 +1,10 @@
-import { EditorUtil } from "../util/editorutil";
 import * as vscode from "vscode";
-import { CommandResult } from "../model/navigatiorcommand";
 import { clamp } from "../util/frequent";
-import { UserConfig } from "../util/userconfig";
+import CommandResult from "../types/command-result";
+import EditorUtil from "../util/editor-util";
+import UserConfig from "../util/userconfig";
 
-export class NavigatorService {
+export default class NavigatorService {
 
     public static jumpLines(qty: number, select: boolean) {
         if (!EditorUtil.activeEditor || qty === 0) return;
@@ -173,7 +173,7 @@ export class NavigatorService {
                 }
         }
 
-        if (!emptyLine) return new CommandResult('No empty lines found');
+        if (!emptyLine) return new CommandResult('No empty lines found', true);
 
         const pos = new vscode.Position(emptyLine, 0);
         const anchor = select

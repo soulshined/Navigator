@@ -1,14 +1,20 @@
-import { ContextItem } from "../model/context";
-import { CommandArgs, CommandResult, NavigatorCommand, NavigatorCommandsList as Commands, NavigatorCommandValueType } from "../model/navigatiorcommand";
-import { FeedbackService } from "../service/feebackservice";
-import { HistoryService } from "../service/navigatorhistory";
-import { StatusBarService } from "../service/statusbar";
-import { UserConfig } from "../util/userconfig";
 import { isInteger } from "../util/frequent";
+import UserConfig from "../util/userconfig";
+import ContextItem from "../model/context";
+import NavigatorCommand from "../model/commands/navigator";
+import NavigatorCommandValueType from "../types/command-value-type";
+import CommandArgs from "../types/command-args";
+import NavigatorCommandsList from "../model/navigatior-command-list";
+import CommandResult from "../types/command-result";
+import FeedbackService from "../service/feebackservice";
+import StatusBarService from "../service/statusbar";
+import HistoryService from "../service/navigatorhistory";
+import NavigatorMode from "../types/navigator-mode";
 
-export class Navigator {
+export default class Navigator {
     private _statusBarService: StatusBarService = new StatusBarService;
     private _isInputMode: ContextItem = new ContextItem("navigator.isInputMode");
+    private _navigatorMode: NavigatorMode = NavigatorMode.INPUT;
     private _isActive: boolean = false;
     private _activeCommand: NavigatorCommand = UserConfig.defaultCommand;
     private _input: string = "";
@@ -17,7 +23,7 @@ export class Navigator {
     private _caseSensitive: boolean = !UserConfig.defaultIgnoreCase;
 
     public async listen(text: string) {
-        if (this.getActiveCommand().valueType === NavigatorCommandValueType.NONE) return;
+        if (this.mode !== NavigatorMode.INPUT || this.getActiveCommand().valueType === NavigatorCommandValueType.NONE) return;
 
         this._input += text;
         this._statusBarService.setState({ text: this._input, command: this.getActiveCommand(), isCaseSensitive: this._caseSensitive });
@@ -27,6 +33,10 @@ export class Navigator {
             return;
         }
 
+    }
+
+    public get mode(): NavigatorMode {
+        return this._navigatorMode;
     }
 
     public scrollHistory(target: "previous" | "next") {
@@ -67,7 +77,7 @@ export class Navigator {
             value: historyItem.value,
             isCaseSensitive: historyItem.isCaseSensitive
         };
-        const result = historyItem.command.handler(args);
+        const result = await historyItem.command.handler(args);
 
         await this._feedbackService.initiateFeedbackFromResult(result, true);
         await this.clear(false, result, true);
@@ -76,14 +86,16 @@ export class Navigator {
     public async doCommand(options?: { select: boolean }) {
         console.log('doing command: ' + this.getActiveCommand(), 'with value: ' + this.getCommandValue(), "options", options);
 
+        if (this.getCommandValue().length === 0 && this.getActiveCommand().valueType !== NavigatorCommandValueType.NONE) return;
+
         const args: CommandArgs = {
             select: options ? options.select : false,
             value: this.getCommandValue(),
             isCaseSensitive: this._caseSensitive
         };
 
-        const result = Commands.getCommand(this.getActiveCommand().description).handler(args);
-        if ((result && !result.isError) || !result)
+        const result = await this.getActiveCommand().handler(args);
+        if (result && !result.isError)
             this._history.addItem({
                 "command": this.getActiveCommand(),
                 ...args
@@ -98,8 +110,8 @@ export class Navigator {
     public async setActiveCommand(commandId: string, args?: any) {
         console.log(`Attempting to set active command to '${commandId}' with args =>`, args);
 
-        if (Commands.exists(commandId))
-            this._activeCommand = Commands.getCommand(commandId);
+        if (NavigatorCommandsList.exists(commandId))
+            this._activeCommand = NavigatorCommandsList.getCommandByDescription(commandId);
 
         if (args && args.isSequenceExecuted) {
             if (args.value) {

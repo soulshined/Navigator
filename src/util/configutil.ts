@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-export class ConfigUtil {
+export default class ConfigUtil {
 
     private static _defaults: Map<String, any> = ConfigUtil.getColorCustomizations();
 
