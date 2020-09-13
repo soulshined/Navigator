@@ -303,6 +303,11 @@
                     "default": true,
                     "description": "When enabled, this will always start the history scroll at the most recently used command, otherwise the last place you scrolled in history will be retained"
                 },
+                "navigator.recursiveSearch": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable this to recursively search the editor text for matches with compatible commands"
+                },
                 "navigator.activeForeground": {
                     "type": "string",
                     "default": "#000000",

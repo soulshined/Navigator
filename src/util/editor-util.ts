@@ -1,4 +1,6 @@
 import { window, TextEditor, Position, TextLine, Range, Selection, commands } from "vscode";
+import UserConfig from "./userconfig";
+import SearchDirection from "../types/search-direction";
 
 export default class EditorUtil {
 
@@ -54,6 +56,36 @@ export default class EditorUtil {
         if (!this.activeEditor || !this.getCurrentPosition()) return;
 
         return new Range(new Position(0, 0), this.getCurrentPosition()!);
+    }
+
+    /**
+     * Can throw exception for invalid regexp
+     */
+    public static findAllMatches(value: string, flags = 'g'): RegExpMatchArray[] {
+        const editor = EditorUtil.activeEditor;
+        if (!editor) return [];
+
+        const matches = editor.document.getText().matchAll(new RegExp(value, flags));
+        return [...matches];
+    }
+
+    public static findNextSubstringMatch(value: string, direction: SearchDirection = SearchDirection.Forward, flags = 'g'): RegExpMatchArray | undefined {
+        const currentPos = EditorUtil.getCurrentPositionOffset();
+        if (currentPos === undefined) return;
+
+        const matches = this.findAllMatches(value, flags);
+        if (matches.length === 0) return;
+
+        let match;
+        if (direction === SearchDirection.Reverse)
+            match = matches.reverse().find(match => match.index && match.index < currentPos);
+        else
+            match = matches.find(match => match.index && match.index > currentPos);
+
+        if (!match && UserConfig.recursiveSearch && matches[0].index !== currentPos)
+            match = matches[0];
+
+        return match;
     }
 
     public static setSelection(position: Position, select: boolean = false) {

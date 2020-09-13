@@ -126,6 +126,12 @@ Default: true
 
   > Note: In the event this is disabled, and there is not a match on a line, like line 4 in the above example, then all the cursors that do match will navigate accordingly (3 and 5 in the example), but the ones that do not find a match to navigate to will be cancelled and removed from the editors selections. 
 
+* `navigator.recursiveSearch`
+[boolean]<br>
+Default: false
+
+  If you are searching through the editor using compatible commands, this setting will recursively search through the document. For example, if you search for a substring and it doesn't exist after the cursor, this will search from the beginning of the document up to the cursor and repeat indefinetly as long as there is a match.
+
 * `navigator.allowableSymbols`
 [array&lt;string&gt;] <br>
 Default: [Class, Constructor, Enum, Function, Method, Namespace, Struct] <br>
@@ -242,6 +248,7 @@ Reverse: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>S</kbd><br>
 Value: substring to query <br>
 Notes: 
 * Toggle case sensitivity with <kbd>ALT</kbd> + <kbd>c</kbd>
+* Supports recursive search
 
 Jump to the nearest substring match, forwards or reverse.
 
@@ -260,6 +267,7 @@ Reverse: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>R</kbd><br>
 Value: regex pattern <br>
 Notes:
 * Toggle case sensitivity with <kbd>ALT</kbd> + <kbd>c</kbd>
+* Supports recursive search
 
 ![overview](images/pattern.gif)
 
@@ -319,6 +327,8 @@ From first non-whitespace character:
 Next: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>n</kbd><br>
 Previous: <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>N</kbd><br>
 Value: None <br>
+Notes:
+* Supports recursive search
 
 Immediately jump to the next/previous position of the same current cursor character/selection.
 
@@ -334,6 +344,7 @@ Notes:
 - Doesn't unfocus Navigator. 
 - Can be repeated without reactivating Navigator or using the repeat keybind
 - Per-language configuration support
+- Supports recursive search
 
 Jump to the previous or next symbol found from cursor position for languages that support symbols.
 

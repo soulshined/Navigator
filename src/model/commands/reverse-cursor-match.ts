@@ -5,6 +5,8 @@ import CommandArgs from "../../types/command-args";
 import CommandResult from "../../types/command-result";
 import NavigatorService from "../../service/navigator";
 import Constants from "../../util/constants";
+import SearchDirection from "../../types/search-direction";
+import { regexEscape } from "../../util/frequent";
 
 export default class ReverseCursorMatchCommand extends NavigatorCommand {
 
@@ -19,21 +21,14 @@ export default class ReverseCursorMatchCommand extends NavigatorCommand {
             if (!editor) return;
             let selectionText = EditorUtil.getText(editor.selection);
 
-            const rangeToStartOfDoc = EditorUtil.getRangeToStartOfDocumentFromCurrentPosition();
             const rangeToEndOfDoc = EditorUtil.getRangeToEndOfDocumentFromCurrentPosition();
-            if (!rangeToStartOfDoc) return;
-
             const textToEndOfDoc = rangeToEndOfDoc === undefined ? '' : EditorUtil.getText(rangeToEndOfDoc);
-            if (selectionText.length === 0 && textToEndOfDoc.length > 0)
-                selectionText = textToEndOfDoc.charAt(0);
+            if (selectionText.length === 0 && textToEndOfDoc.length > 0) selectionText = textToEndOfDoc.charAt(0);
+            else if (selectionText.length === 0) return;
 
-            if (selectionText.length === 0) return;
-
-            const textToStartOfDoc = EditorUtil.getText(rangeToStartOfDoc);
-            const index = textToStartOfDoc.lastIndexOf(selectionText);
-
-            if (index !== -1) {
-                NavigatorService.jumpToAbsoluteIndex(index, args.select);
+            const match = EditorUtil.findNextSubstringMatch(regexEscape(selectionText), SearchDirection.Reverse);
+            if (match?.index) {
+                NavigatorService.jumpToAbsoluteIndex(match.index, args.select);
                 return new CommandResult("Success");
             }
 

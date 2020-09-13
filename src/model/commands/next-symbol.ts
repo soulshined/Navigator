@@ -20,13 +20,15 @@ export default class NextSymbolCommand extends NavigatorCommand {
             const pos = EditorUtil.getCurrentPosition();
             if (!EditorUtil.activeEditor || pos === undefined) return;
 
-            const symbols: DocumentSymbol[] = await commands.executeCommand("vscode.executeDocumentSymbolProvider", EditorUtil.activeEditor.document.uri) || [];
+            let symbols: DocumentSymbol[] = await commands.executeCommand("vscode.executeDocumentSymbolProvider", EditorUtil.activeEditor.document.uri) || [];
             symbols.push(...symbols.flatMap(symbol => symbol.children));
+            symbols = symbols.filter(symbol => UserConfig.allowableSymbols.includes(symbol.kind));
             symbols.sort((a, b) => a.selectionRange.start.line - b.selectionRange.start.line);
 
-            const next = symbols.filter(symbol => UserConfig.allowableSymbols.includes(symbol.kind)).find(symbol => symbol.selectionRange.start.line > pos.line);
-
-            if (!next) return;
+            let next = symbols.find(symbol => symbol.selectionRange.start.line > pos.line);
+            if (!next && UserConfig.recursiveSearch && symbols.length > 1)
+                next = symbols[0];
+            else if (!next) return;
 
             await EditorUtil.setSelectionAndRevealCenter(next.selectionRange.start);
             return undefined;

@@ -100,6 +100,10 @@ export default class UserConfig {
         return this.config.get('deactivateNavigatorOnEditorChange', true);
     }
 
+    public static get recursiveSearch(): boolean {
+        return this.config.get('recursiveSearch', false);
+    }
+
     public static get allowableSymbols(): SymbolKind[] {
         const editor = window.activeTextEditor;
         if (!editor) return defaultAllowableSymbols;

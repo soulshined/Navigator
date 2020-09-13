@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
-import { clamp } from "../util/frequent";
+import { clamp, regexEscape } from "../util/frequent";
 import CommandResult from "../types/command-result";
 import EditorUtil from "../util/editor-util";
 import UserConfig from "../util/userconfig";
+import SearchDirection from "../types/search-direction";
 
 export default class NavigatorService {
 
@@ -61,102 +62,45 @@ export default class NavigatorService {
         EditorUtil.activeEditor.revealRange(range);
     }
 
-    public static jumpToNextMatchViaPattern(pattern: string, isCaseSensitive: boolean, select: boolean) {
-        const rangeToDocEnd = EditorUtil.getRangeToEndOfDocumentFromCurrentPosition();
-        if (!rangeToDocEnd || EditorUtil.getCurrentPositionOffset() === undefined) return;
-
-        const rangeText = EditorUtil.getText(rangeToDocEnd).substring(1);
-        let flags: string = "";
+    public static jumpToNextMatchViaPattern(pattern: string, direction: SearchDirection, isCaseSensitive: boolean, select: boolean) {
+        let flags: string = "g";
         if (!isCaseSensitive) flags += 'i';
 
         try {
-            const regex = new RegExp(pattern, flags);
-
-            const match = regex.exec(rangeText);
-            if (match != null) {
-                this.jumpToAbsoluteIndex(EditorUtil.getCurrentPositionOffset()! + match.index + 1, select);
-                return new CommandResult("Success");
-            }
-
-            return new CommandResult("Not match found", true);
+            new RegExp(pattern, flags);
         } catch (error) {
             console.error(error);
 
             return new CommandResult(!error.message || error.message === "" ? "Invalid regex pattern" : error.message, true);
         }
+
+        const match = EditorUtil.findNextSubstringMatch(pattern, direction, flags);
+
+        if (match?.index) {
+            this.jumpToAbsoluteIndex(match.index, select);
+            return new CommandResult("Success");
+        }
+
+        return new CommandResult("Not match found", true);
     }
 
-    public static jumpToNextSubstring(value: string, isCaseSensitive: boolean, select: boolean) {
-        const rangeToDocEnd = EditorUtil.getRangeToEndOfDocumentFromCurrentPosition();
-        if (!rangeToDocEnd || EditorUtil.getCurrentPositionOffset() === undefined) return;
+    public static jumpToNextSubstringMatch(value: string, direction: SearchDirection, isCaseSensitive: boolean, select: boolean) {
+        let flags = 'g';
+        if (!isCaseSensitive) flags += 'i';
 
-        let rangeText = EditorUtil.getText(rangeToDocEnd).substring(1);
-        if (!isCaseSensitive) {
-            rangeText = rangeText.toLowerCase();
-            value = value.toLowerCase();
-        }
-        const matchIndex = rangeText.indexOf(value);
-
-        if (matchIndex !== -1) {
-            this.jumpToAbsoluteIndex(matchIndex + EditorUtil.getCurrentPositionOffset()! + 1, select);
+        const match = EditorUtil.findNextSubstringMatch(regexEscape(value), direction, flags);
+        if (match?.index) {
+            this.jumpToAbsoluteIndex(match.index, select);
             return new CommandResult("Success");
         }
 
         return new CommandResult("No match found", true);
     }
 
-    public static jumpToPrevSubstring(value: string, isCaseSensitive: boolean, select: boolean) {
-        const rangeFromDocStart = EditorUtil.getRangeToStartOfDocumentFromCurrentPosition();
-        if (!rangeFromDocStart || EditorUtil.getCurrentPositionOffset() === undefined) return;
-
-        let rangeText = EditorUtil.getText(rangeFromDocStart);
-        if (!isCaseSensitive) {
-            rangeText = rangeText.toLowerCase();
-            value = value.toLowerCase();
-        }
-        const matchIndex = rangeText.lastIndexOf(value);
-
-        if (matchIndex !== -1) {
-            this.jumpToAbsoluteIndex(matchIndex, select);
-            return new CommandResult("Success");
-        }
-
-        return new CommandResult("No previous match found", true);
-    }
-
-    public static jumpToPrevMatchViaPattern(pattern: string, isCaseSensitive: boolean, select: boolean) {
-        const rangeToDocStart = EditorUtil.getRangeToStartOfDocumentFromCurrentPosition();
-        if (!rangeToDocStart || EditorUtil.getCurrentPositionOffset() === undefined) return;
-
-        const rangeText = EditorUtil.getText(rangeToDocStart);
-        let flags: string = "g";
-        if (!isCaseSensitive) flags += 'i';
-
-        try {
-            const regex = new RegExp(pattern, flags);
-            const matches = [...rangeText.matchAll(regex)];
-
-            if (matches.length > 0) {
-                let match: RegExpMatchArray = matches[matches.length - 1];
-                if (match.index) {
-                    this.jumpToAbsoluteIndex(match.index, select);
-                    return new CommandResult("Success");
-                }
-                return new CommandResult("Error finding index for match", true);
-            }
-
-            return new CommandResult("No previous match found", true);
-        } catch (error) {
-            console.error(error);
-
-            return new CommandResult(!error.message || error.message === "" ? "Invalid regex pattern" : error.message, true);
-        }
-    }
-
-    public static jumpToParagraph(direction: 'forwards' | 'reverse', select: boolean = false) {
+    public static jumpToParagraph(direction: SearchDirection, select: boolean = false) {
         if (!EditorUtil.getCurrentPosition()) return;
         let emptyLine;
-        if (direction === 'forwards') {
+        if (direction === SearchDirection.Forward) {
             const text = EditorUtil.getRangeToEndOfDocumentFromCurrentPosition()!;
             for (let i = text.start.line + 1; i < EditorUtil.activeEditor!.document.lineCount; ++i)
                 if (EditorUtil.getLineAt(i)!.isEmptyOrWhitespace) {
