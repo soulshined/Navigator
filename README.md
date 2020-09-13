@@ -374,6 +374,8 @@ Notes:
 
 Navigate to the beginning of the previous or next paragraph. A 'paragraph' defined as any text separated by an empty or whitespace filled line. This command will navigate to the first found empty line in the respective direction, regardless of scope.
 
+![overview](images/paragraph.gif)
+
 ---
 
 ## Center Editor On Cursor
