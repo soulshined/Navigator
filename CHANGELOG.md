@@ -3,7 +3,16 @@ All notable changes to the Navigator extension will be documented in this file.
 
 ## Release Notes
 
-### 1.1.1
+### 1.2.1
+- Patch to support recursive search for the following commands:
+    * Pattern Search
+    * Substring search
+    * Cursor Match
+    * Go to Next/Prev Symbol
+
+  Recursive search, when enabled, allows you to jump to the top of the document to continue searching when search queries reach the end of the document.
+
+### 1.2.0
 
 - Adds a new command to center the editor on the active cursor line, if applicable and if there is room to scroll<br>
   Use `CTRL + ;` chord `CTRL + m`
