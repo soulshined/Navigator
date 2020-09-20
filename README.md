@@ -140,6 +140,12 @@ Notes:
 
     For the `Navigate to Prev/Next Symbol` command, this restricts the symbols permitted.
 
+* `navigator.stickyCursorStyle`
+[enum]<BLOCK, LINE><br>
+Default: BLOCK<br>
+
+    The display style of the sticky cursors
+
 * `navigator.sequence1`
 [array&lt;object{ commandId, args? } | string&lt;commandIds&gt;&gt;] <br>
 Default: string &lt;commandIds>
@@ -227,9 +233,29 @@ To switch to another Navigator command type, you can execute its identifying key
 
 ---
 
+## Sticky Cursors
+<kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>&</kbd><br>
+Notes:
+* Press <kbd>space</kbd> to add a sticky cursor
+* Press <kbd>backspace</kbd> while on a sticky cursor to remove it
+* Press <kbd>enter</kbd> while using the sticky cursor to apply the cursors
+* Press <kbd>espace</kbd> at any time to cancel the sticky cursor command and active cursors
+* Use the `navigator.stickyCursorStyle` setting to alter the display style
+
+Sticky cursors allow you to arbitrarily add cursors anywhere in your editor all from the comfort of your keyboard! No <kbd>CTRL</kbd> + `CLICK` required!
+
+You can freely move around your editor using your arrow keys and add a 'sticky cursor' to edit multiple areas at once, arbitrarily; meaning, no need for similar keywoards or symbols or find/next matches or word groupings or column specific ranges.
+
+![sticky cursors](images/sticky-cursors.gif)
+
+
+> Any navigator command you switch to or execute while using the sticky cursor command will disable and remove all sticky cursors actively in the editor
+
+---
+
 ## Navigate Lines (relatively)
 <kbd>CTRL</kbd> + <kbd>;</kbd> chord <kbd>CTRL</kbd> + <kbd>j</kbd><br>
-Value: Integer
+Value: Integer </br>
 Notes:
 * Use a negative number to jump backwards
 * Use a positive number to jump forwards
