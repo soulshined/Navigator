@@ -1,12 +1,12 @@
 'use strict';
 
-import { isObject } from 'util';
 import { commands, env, ExtensionContext, window } from 'vscode';
 import Navigator from './controller/navigator';
 import NavigatorCommandValueType from './types/command-value-type';
 import SequenceType from './types/sequence';
 import Constants from './util/constants';
 import EditorUtil from './util/editor-util';
+import { isObject } from './util/frequent';
 import UserConfig from './util/userconfig';
 
 export function activate(context: ExtensionContext) {
@@ -32,14 +32,23 @@ export function activate(context: ExtensionContext) {
         "navigator.pick-history-item",
         "navigator.sequence1",
         "navigator.sequence2",
-        "navigator.commandhistory",
-        "navigator.accept"
+        "navigator.up",
+        "navigator.down",
+        "navigator.accept",
+        "navigator.select-accept",
+        "navigator.sticky-cursors",
+        "navigator.addStickyCursor",
+        "navigator.removeStickyCursor",
     ]
 
     context.subscriptions.push(
         window.onDidChangeVisibleTextEditors(() => {
             if (UserConfig.deactivateNavigatorOnEditorChangeEvent) navigator.clear()
         }),
+
+        window.onDidChangeActiveTextEditor(() => {
+            if (UserConfig.deactivateNavigatorOnEditorChangeEvent) navigator.clear()
+        })
     );
 
     //region top-level actions
@@ -127,7 +136,8 @@ export function activate(context: ExtensionContext) {
     //end region command palette commands
 
     //region commands
-    registerCommand('navigator.commandhistory', (args) => navigator.scrollHistory(args.target));
+    registerCommand('navigator.up', async () => await navigator.doUp());
+    registerCommand('navigator.down', async () => await navigator.doDown());
     registerCommand('navigator.toggle-search-case-sensitivity', () => navigator.toggleCaseSensitivity())
     registerCommand('navigator.search', async (args) => await navigator.setActiveCommand(Constants.COMMANDS.SEARCH, args));
     registerCommand('navigator.reverse-search', async (args) => {
@@ -189,6 +199,9 @@ export function activate(context: ExtensionContext) {
         await navigator.setActiveCommand(Constants.COMMANDS.JUMP_TO_NEXT_PARAGRAPH);
         await navigator.doCommand({ select: true });
     })
+    registerTextEditorCommand('navigator.addStickyCursor', async () => navigator.stickyCursors.add());
+    registerTextEditorCommand('navigator.removeStickyCursor', async () => navigator.stickyCursors.remove());
+    registerCommand('navigator.sticky-cursors', async () => await navigator.setActiveCommand(Constants.COMMANDS.STICKY_CURSORS))
     //endregion commands
 }
 

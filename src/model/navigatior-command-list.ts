@@ -13,6 +13,7 @@ import ReverseSearchCommand from "./commands/reverse-search";
 import SearchCommand from "./commands/search";
 import PreviousSymbolCommand from "./commands/previous-symbol";
 import NextSymbolCommand from "./commands/next-symbol";
+import StickyCursorsCommand from "./commands/sticky-cursors";
 
 export default class NavigatorCommandsList {
 
@@ -30,7 +31,8 @@ export default class NavigatorCommandsList {
         new ReverseSearchCommand,
         new SearchCommand,
         new NextSymbolCommand,
-        new PreviousSymbolCommand
+        new PreviousSymbolCommand,
+        new StickyCursorsCommand
     ]);
 
     public static getCommandByDescription(description: string): NavigatorCommand {

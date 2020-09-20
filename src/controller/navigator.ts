@@ -10,10 +10,15 @@ import FeedbackService from "../service/feebackservice";
 import StatusBarService from "../service/statusbar";
 import HistoryService from "../service/navigatorhistory";
 import NavigatorMode from "../types/navigator-mode";
+import StickyCursorsService from "../service/sticky-cursors";
+import StickyCursorsCommand from "../model/commands/sticky-cursors";
+import { commands } from "vscode";
 
 export default class Navigator {
     private _statusBarService: StatusBarService = new StatusBarService;
     private _isInputMode: ContextItem = new ContextItem("navigator.isInputMode");
+    private _isStickyCursorMode: ContextItem = new ContextItem("navigator.isStickyCursorMode");
+    private _isAnyMode: ContextItem = new ContextItem("navigator.isAnyMode");
     private _navigatorMode: NavigatorMode = NavigatorMode.INPUT;
     private _isActive: boolean = false;
     private _activeCommand: NavigatorCommand = UserConfig.defaultCommand;
@@ -21,6 +26,7 @@ export default class Navigator {
     private _history: HistoryService = new HistoryService;
     private _feedbackService: FeedbackService = new FeedbackService(this._statusBarService);
     private _caseSensitive: boolean = !UserConfig.defaultIgnoreCase;
+    private _stickyCursors: StickyCursorsService = new StickyCursorsService;
 
     public async listen(text: string) {
         if (this.mode !== NavigatorMode.INPUT || this.getActiveCommand().valueType === NavigatorCommandValueType.NONE) return;
@@ -39,7 +45,11 @@ export default class Navigator {
         return this._navigatorMode;
     }
 
-    public scrollHistory(target: "previous" | "next") {
+    public get stickyCursors(): StickyCursorsService {
+        return this._stickyCursors;
+    }
+
+    private scrollHistory(target: "previous" | "next") {
         if (this._history.isEmpty()) return;
 
         const action = this._history.getForUserRequest(target);
@@ -84,9 +94,12 @@ export default class Navigator {
     }
 
     public async doCommand(options?: { select: boolean }) {
-        console.log('doing command: ' + this.getActiveCommand(), 'with value: ' + this.getCommandValue(), "options", options);
-
         if (this.getCommandValue().length === 0 && this.getActiveCommand().valueType !== NavigatorCommandValueType.NONE) return;
+
+        if (this.mode === NavigatorMode.STICKY_CURSOR)
+            this.stickyCursors.convertToSelections();
+
+        console.log('doing command: ' + this.getActiveCommand(), 'with value: ' + this.getCommandValue(), "options", options);
 
         const args: CommandArgs = {
             select: options ? options.select : false,
@@ -112,6 +125,13 @@ export default class Navigator {
 
         if (NavigatorCommandsList.exists(commandId))
             this._activeCommand = NavigatorCommandsList.getCommandByDescription(commandId);
+
+        if (this._activeCommand instanceof StickyCursorsCommand)
+            this.setMode(NavigatorMode.STICKY_CURSOR);
+        else {
+            this.setMode(NavigatorMode.INPUT);
+            this.stickyCursors.clear();
+        }
 
         if (args && args.isSequenceExecuted) {
             if (args.value) {
@@ -143,7 +163,8 @@ export default class Navigator {
     public async activate() {
         await this.clear(true);
         this._isActive = true;
-        this._isInputMode.set(true);
+        if (this._activeCommand instanceof StickyCursorsCommand) this.setMode(NavigatorMode.STICKY_CURSOR);
+        else this.setMode(NavigatorMode.INPUT);
         if (UserConfig.activateWithPreviousCommand)
             this._activeCommand = this._history.getFirstNonNoneValueType()?.command ?? UserConfig.defaultCommand;
         this._statusBarService.setState({ text: '', command: this.getActiveCommand(), isCaseSensitive: this._caseSensitive });
@@ -155,6 +176,40 @@ export default class Navigator {
         this._statusBarService.setState({ text: this.getCommandValue(), command: this.getActiveCommand(), isCaseSensitive: this._caseSensitive });
     }
 
+    private setMode(mode: NavigatorMode = NavigatorMode.UNDEFINED) {
+        switch (mode) {
+            case NavigatorMode.INPUT:
+                this._isInputMode.set(true);
+                this._isStickyCursorMode.set(false);
+                break;
+            case NavigatorMode.STICKY_CURSOR:
+                this._isInputMode.set(false);
+                this._isStickyCursorMode.set(true);
+                break;
+            default:
+                this._isInputMode.set(false);
+                this._isStickyCursorMode.set(false);
+                break;
+        }
+
+        this._navigatorMode = mode;
+        this._isAnyMode.set(this.mode !== NavigatorMode.UNDEFINED)
+    }
+
+    public async doUp() {
+        if (this.mode === NavigatorMode.INPUT)
+            this.scrollHistory('next');
+
+        else await commands.executeCommand('cursorUp');
+    }
+
+    public async doDown() {
+        if (this.mode === NavigatorMode.INPUT)
+            this.scrollHistory('previous');
+
+        else await commands.executeCommand('cursorDown');
+    }
+
     public async clear(clearText: boolean = false, result: CommandResult | undefined = undefined, isHistoryExecuted: boolean = false) {
         if (this.getActiveCommand().valueType === NavigatorCommandValueType.SINGLE_CHAR)
             this._input = this._input.charAt(1);
@@ -164,8 +219,10 @@ export default class Navigator {
         await this._feedbackService.clear();
         this._statusBarService.setColor(UserConfig.inactiveForeground);
 
+
         this._isActive = false;
-        this._isInputMode.set(false);
+        this.setMode();
+        this._stickyCursors.clear();
         if (!UserConfig.activateWithPreviousCaseSensitivity)
             this._caseSensitive = !UserConfig.defaultIgnoreCase;
         if (UserConfig.resetHistoryIndex)

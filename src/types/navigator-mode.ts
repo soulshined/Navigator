@@ -1,5 +1,7 @@
 enum NavigatorMode {
-    INPUT
+    UNDEFINED,
+    INPUT,
+    STICKY_CURSOR
 }
 
 export default NavigatorMode;

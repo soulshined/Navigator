@@ -60,16 +60,31 @@
             {
                 "command": "navigator.activate",
                 "key": "ctrl+;",
-                "when": "editorTextFocus && !navigator.isInputMode"
+                "when": "editorTextFocus && !navigator.isAnyMode"
             },
             {
                 "command": "navigator.cancel",
                 "key": "escape",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.accept",
                 "key": "enter",
+                "when": "editorTextFocus && navigator.isAnyMode"
+            },
+            {
+                "command": "navigator.addStickyCursor",
+                "key": "space",
+                "when": "editorTextFocus && navigator.isStickyCursorMode"
+            },
+            {
+                "command": "navigator.removeStickyCursor",
+                "key": "backspace",
+                "when": "editorTextFocus && navigator.isStickyCursorMode"
+            },
+            {
+                "command": "navigator.sticky-cursors",
+                "key": "ctrl+shift+7",
                 "when": "editorTextFocus && navigator.isInputMode"
             },
             {
@@ -80,87 +95,87 @@
             {
                 "command": "navigator.jump-to-next-symbol",
                 "key": "ctrl+down",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.jump-to-previous-symbol",
                 "key": "ctrl+up",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.search",
                 "key": "ctrl+s",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.reverse-search",
                 "key": "ctrl+shift+s",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.jumplines",
                 "key": "ctrl+j",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.center-screen-on-cursor",
                 "key": "ctrl+m",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.pattern-search",
                 "key": "ctrl+r",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.reverse-pattern-search",
                 "key": "ctrl+shift+r",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.end-of-line-char",
                 "key": "ctrl+shift+4",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.start-of-line-char",
                 "key": "ctrl+shift+6",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.nth-line-char",
                 "key": "ctrl+shift+3",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.jump-to-next-cursor-match",
                 "key": "ctrl+n",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.jump-to-reverse-cursor-match",
                 "key": "ctrl+shift+n",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.jump-to-previous-paragraph",
                 "key": "ctrl+[",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.select-jump-to-previous-paragraph",
                 "key": "ctrl+shift+[",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.jump-to-next-paragraph",
                 "key": "ctrl+]",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.select-jump-to-next-paragraph",
                 "key": "ctrl+shift+]",
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.backspace",
@@ -188,20 +203,14 @@
                 "when": "editorTextFocus && navigator.isInputMode"
             },
             {
-                "command": "navigator.commandhistory",
+                "command": "navigator.up",
                 "key": "up",
-                "args": {
-                    "target": "next"
-                },
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
-                "command": "navigator.commandhistory",
+                "command": "navigator.down",
                 "key": "down",
-                "args": {
-                    "target": "previous"
-                },
-                "when": "editorTextFocus && navigator.isInputMode"
+                "when": "editorTextFocus && navigator.isAnyMode"
             },
             {
                 "command": "navigator.copy",
@@ -211,7 +220,7 @@
             {
                 "command": "navigator.repeat",
                 "key": "ctrl+shift+;",
-                "when": "editorTextFocus && !navigator.isInputMode"
+                "when": "editorTextFocus && !navigator.isAnyMode"
             },
             {
                 "command": "navigator.toggle-search-case-sensitivity",
@@ -235,7 +244,8 @@
                         "JUMP LINES",
                         "LINE FIRST CHAR OCCURRENCE",
                         "LINE LAST CHAR OCCURRENCE",
-                        "LINE N CHAR"
+                        "LINE N CHAR",
+                        "STICKY CURSORS"
                     ],
                     "default": "PATTERN SEARCH",
                     "description": "The command that Navigator defaults to each time it is activated",
@@ -342,6 +352,19 @@
                         "Namespace",
                         "Struct"
                     ]
+                },
+                "navigator.stickyCursorStyle": {
+                    "type": "string",
+                    "enum": [
+                        "BLOCK",
+                        "LINE"
+                    ],
+                    "enumDescriptions": [
+                        "Displays a sticky cursor as a block around the nearest character",
+                        "Displays a sticky cursor as a line next to the nearest character"
+                    ],
+                    "default": "BLOCK",
+                    "description": "The style of sticky cursor."
                 },
                 "navigator.sequence1": {
                     "scope": "language-overridable",

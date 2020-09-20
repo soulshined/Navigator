@@ -5,6 +5,8 @@ import NavigatorCommand from "../model/commands/navigator";
 import NavigatorCommandsList from "../model/navigatior-command-list";
 import NavigatorCommandValueType from "../types/command-value-type";
 import SequenceType from "../types/sequence";
+import StickyCursorsCommand from "../model/commands/sticky-cursors";
+import StickyCursorStyle from "../types/sticky-cursor-style";
 
 const defaultAllowableSymbols = [
     SymbolKind.Class,
@@ -26,7 +28,7 @@ export default class UserConfig {
 
         if (NavigatorCommandsList.exists(commandDesc)) {
             const command = NavigatorCommandsList.getCommandByDescription(commandDesc);
-            if (command.valueType !== NavigatorCommandValueType.NONE) return command;
+            if (command.valueType !== NavigatorCommandValueType.NONE || command instanceof StickyCursorsCommand) return command;
         }
 
         return NavigatorCommandsList.getCommandByDescription(Constants.COMMANDS.PATTERN_SEARCH);
@@ -125,4 +127,9 @@ export default class UserConfig {
             ? defaultAllowableSymbols
             : symbols;
     }
+
+    public static get stickyCursorStyle() {
+        return this.config.get('stickyCursorStyle', StickyCursorStyle.BLOCK);
+    }
+
 }
